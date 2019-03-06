@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from PageLocators.loginpage_locators import LoginPageLocator as loc
 from Common.basepage import BasePage
-
+import time
 class LoginPage(BasePage):
 
 
@@ -18,6 +18,7 @@ class LoginPage(BasePage):
     #登录功能
     def login(self,username,password):
         name = "登录页面_登录功能"
+        time.sleep(5)
         self.wait_eleVisible(loc.user_input,model_name=name)
         #WebDriverWait(self.driver,10).until(EC.visibility_of_all_elements_located((loc.user_input)))
         #用户名定位.

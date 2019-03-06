@@ -14,37 +14,42 @@ import pytest
 @ddt.ddt
 
 @pytest.mark.login
-class TestLogin(unittest.TestCase):
-    @classmethod #修饰性，页面调用时不需要实例化
-    def setUpClass(cls):
-        #调用Google浏览器
-        cls.driver = webdriver.Chrome()
-        cls.driver.get(CD.login_url)
-    @classmethod
-    def tearDownClass(cls):
-        cls.driver.quit()
-
-    def tearDown(self):
-        self.driver.refresh()
+@pytest.mark.usefixtures("prepare_nev")
+@pytest.mark.usefixtures("refresh_page")
+class TestLogin:
+    # @classmethod #修饰性，页面调用时不需要实例化
+    # def setUpClass(cls):
+    #     #调用Google浏览器
+    #     cls.driver = webdriver.Chrome()
+    #     cls.driver.get(CD.login_url)
+    # @classmethod
+    # def tearDownClass(cls):
+    #     cls.driver.quit()
+    #
+    # def tearDown(self):
+    #     self.driver.refresh()
     #用例1.登录成功
     #TD引入login_datas内的登录成功数据
     #通过pytest给测试用例加标签，可以重复加标签
-    @pytest.mark.smoke
-    def test_loogin_1_success(self):
-        #调用登录类内的方法，并传参
-        #对象调用类方法
-        LoginPage(self.driver).login(TD.succ_data["user"],TD.succ_data["password"])
-        #断言，通过首页元素断言登录是否成功
-        self.assertTrue(IndexPage(self.driver).isExist_quitEle())
+
 
     #用例2：密码为空
-    @ddt.data(*TD.datas)
-    def test_login_0_errorDatas(self,data):
+    #pytest参数化
+    @pytest.mark.parametrize("data",TD.datas)
+    def test_login_0_errorDatas(self,data,prepare_nev):
         #1.步骤：登录页面功能
-        lp = LoginPage(self.driver)
+        lp = LoginPage(prepare_nev)
         lp.login(data["user"],data["password"])
         #2.断言
-        self.assertEqual(data["check"],lp.get_errorMsg_from_loginArea())#assertEqual通过实际给出的提示，与get_errorMsg_from_loginArea方法定位的提示是否一致，一致用例通过
+        assert data["check"],lp.get_errorMsg_from_loginArea()#assertEqual通过实际给出的提示，与get_errorMsg_from_loginArea方法定位的提示是否一致，一致用例通过
+
+    @pytest.mark.smoke
+    def test_loogin_1_success(self, prepare_nev):
+        # 调用登录类内的方法，并传参
+        # 对象调用类方法
+        LoginPage(prepare_nev).login(TD.succ_data["user"], TD.succ_data["password"])
+        # 断言，通过首页元素断言登录是否成功
+        assert IndexPage(prepare_nev).isExist_quitEle()
 
     # #用例3：账户为空时
     # def test_login_noUser(self):

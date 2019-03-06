@@ -46,77 +46,68 @@ from selenium import webdriver
 from TestDatas import common_datas as CD
 from TestDatas import invest_datas as TD
 import time
-class TestInvest(unittest.TestCase):
+import pytest
 
-    @classmethod
-    def setUpClass(cls):
-        # cls.driver = webdriver.Chrome()
-        # cls.driver.maximize_window()
-        # cls.driver.get(CD.login_url)
-        pass
+@pytest.mark.usefixtures("prepare_nev")
+@pytest.mark.usefixtures("refresh_page")
+@pytest.mark.invest
+class TestInvest:
+    #投资失败
+    @pytest.mark.noinvest
+    def test_invest_failed_no100(self,prepare_nev):
+        LoginPage(prepare_nev).login(CD.user,CD.passwd)
+        #首页-抢投标按钮-进入投标页面
+        IndexPage(prepare_nev).click_firstBid()
+        #投标输入框,输入
+        time.sleep(3)
+        BidPage(prepare_nev).invest(110)
+        #点击投标按钮
+        a = BidPage(prepare_nev).get_errorMsg_from_pageCenter()
+        #断言文本定位：//div[@class="text-center"]
+        assert a,'投标金额必须为100的倍数'
 
+    #投资失败
+    @pytest.mark.noinvest1
+    def test_invest_failed_no10(self,prepare_nev):
+        time.sleep(5)
+        LoginPage(prepare_nev).login(CD.user,CD.passwd)
+        # 首页-抢投标按钮-进入投标页面
+        IndexPage(prepare_nev).click_firstBid()
+        # 投标输入框,输入
+        time.sleep(3)
+        BidPage(prepare_nev).bid(72)
+        # 点击投标按钮
+        a = BidPage(prepare_nev).get_button_text()
+        # 投资为1的时候按钮定位：//button[@class="btn btn-special height_style"]
+        assert a, '请输入10的整数倍'
+    #投资失败，异常数据
+    @pytest.mark.noinvest2
+    def test_invest_failed_invalid_data(self,prepare_nev):
+        time.sleep(5)
+        LoginPage(prepare_nev).login(CD.user, CD.passwd)
+        # 首页-抢投标按钮-进入投标页面
+        IndexPage(prepare_nev).click_firstBid()
+        # 投标输入框,输入
+        time.sleep(3)
+        input_clear=BidPage(prepare_nev).invest(00000)
+        # 点击投标按钮
+        a = BidPage(prepare_nev).get_errorMsg_from_pageCenter()
+        # 断言文本定位：//div[@class="text-center"]
+        assert a, '请正确填写投标金额'
 
-    def setUp(self):
-        self.driver = webdriver.Chrome()
-        self.driver.maximize_window()
-        self.driver.get(CD.login_url)
-        #调用登录页面登录
-
-
-
-    def tearDown(self):
-        self.driver.refresh()
-    #投资成功用例
-    def test_invest_success(self):
-        LoginPage(self.driver).login(CD.user, CD.passwd)#self.driver对象调用setupClass内里的类方法传参
+#投资成功用例
+    def test_invest_success(self,prepare_nev):
+        LoginPage(prepare_nev).login(CD.user, CD.passwd)#self.driver对象调用setupClass内里的类方法传参
         #步骤
         # 1、首页 - 选标投资。默认选第一个标。
-        IndexPage(self.driver).click_firstBid()
+        IndexPage(prepare_nev).click_firstBid()
         # 2.0标页面 - 金额输入框中，获取用户投标前的余额
-        bp = BidPage(self.driver)
+        bp = BidPage(prepare_nev)
         userMoney_beforeInvest = bp.get_userLeftMoney()
         # 2、标页面 - 金额输入，投资操作。
         bp.invest(TD.money)
         # 3、标页面 - 投资成功的弹出框中，点击查看并激活
         bp.click_activeButton_on_investSuccess_popup()
         #断言
-        userMoney_afterInvest = UserPage(self.driver).get_userLeftMoney()
-        self.assertEqual(float(userMoney_beforeInvest),userMoney_afterInvest+TD.money)
-
-    #投资失败
-    def test_invest_failed_no100(self):
-        LoginPage(self.driver).login(CD.user,CD.passwd)
-        #首页-抢投标按钮-进入投标页面
-        IndexPage(self.driver).click_firstBid()
-        #投标输入框,输入
-        time.sleep(3)
-        BidPage(self.driver).invest(110)
-        #点击投标按钮
-        a = BidPage(self.driver).get_errorMsg_from_pageCenter()
-        #断言文本定位：//div[@class="text-center"]
-        self.assertEqual(a,'投标金额必须为100的倍数')
-
-    #投资失败
-    def test_invest_failed_no10(self):
-        LoginPage(self.driver).login(CD.user,CD.passwd)
-        # 首页-抢投标按钮-进入投标页面
-        IndexPage(self.driver).click_firstBid()
-        # 投标输入框,输入
-        time.sleep(3)
-        BidPage(self.driver).bid(72)
-        # 点击投标按钮
-        a = BidPage(self.driver).get_button_text()
-        # 投资为1的时候按钮定位：//button[@class="btn btn-special height_style"]
-        self.assertEqual(a, '请输入10的整数倍')
-    #投资失败，异常数据
-    def test_invest_failed_invalid_data(self):
-        LoginPage(self.driver).login(CD.user, CD.passwd)
-        # 首页-抢投标按钮-进入投标页面
-        IndexPage(self.driver).click_firstBid()
-        # 投标输入框,输入
-        time.sleep(3)
-        input_clear=BidPage(self.driver).invest(00000)
-        # 点击投标按钮
-        a = BidPage(self.driver).get_errorMsg_from_pageCenter()
-        # 断言文本定位：//div[@class="text-center"]
-        self.assertEqual(a, '请正确填写投标金额')
+        userMoney_afterInvest = UserPage(prepare_nev).get_userLeftMoney()
+        assert float(userMoney_beforeInvest),userMoney_afterInvest+TD.money

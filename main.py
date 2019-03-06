@@ -2,11 +2,12 @@
 入口函数
 
 '''
-import unittest
 import HTMLTestRunnerNew
-# from Common import path
-from TestCase import test_invest
+import unittest
+
 from  TestCase import test_login
+from TestCase.invest import test_invest
+
 if __name__ == '__main__':
     # suite = unittest.TestSuite()
     # suite.addTest(unittest.TestLoader().loadTestsFromModule(test_invest))
