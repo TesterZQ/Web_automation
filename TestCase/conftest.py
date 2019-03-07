@@ -24,11 +24,13 @@ import pytest
     1.fixture的函数名称，就是代表他的返回值
     2.在测试用例中。fixture函数名称作为测试用例的参数
 '''
-
-driver = None
-@pytest.fixture(scope="class")#scope="class"
+from PageObjects.login_page import LoginPage
+from TestDatas import login_datas as TD
+from PageObjects.index_page import IndexPage
+# driver = None
+@pytest.fixture(scope="class")#
 def prepare_nev():
-    global driver
+    # global driver
     #潜质条件
     print("==============测试类级别======================")
     driver = webdriver.Chrome()
@@ -39,9 +41,13 @@ def prepare_nev():
     #后置条件
     driver.quit()
 
-@pytest.fixture(scope="class")
-def refresh_page():
+@pytest.fixture()
+def refresh_page(prepare_nev):
     print("==============测试用例级别======================")
-    global driver
+    # global driver
     yield
-    driver.refresh()
+    prepare_nev.refresh()
+
+@pytest.fixture(scope="class")
+def init_login(prepare_nev):
+    LoginPage(prepare_nev).login(CD.user,CD.passwd)

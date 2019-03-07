@@ -49,13 +49,13 @@ import time
 import pytest
 
 @pytest.mark.usefixtures("prepare_nev")
+@pytest.mark.usefixtures("init_login")
 @pytest.mark.usefixtures("refresh_page")
 @pytest.mark.invest
 class TestInvest:
     #投资失败
-    @pytest.mark.noinvest
     def test_invest_failed_no100(self,prepare_nev):
-        LoginPage(prepare_nev).login(CD.user,CD.passwd)
+        # LoginPage(prepare_nev).login(CD.user,CD.passwd)
         #首页-抢投标按钮-进入投标页面
         IndexPage(prepare_nev).click_firstBid()
         #投标输入框,输入
@@ -69,10 +69,11 @@ class TestInvest:
     #投资失败
     @pytest.mark.noinvest1
     def test_invest_failed_no10(self,prepare_nev):
-        time.sleep(5)
-        LoginPage(prepare_nev).login(CD.user,CD.passwd)
+        # time.sleep(5)
+        # LoginPage(prepare_nev).login(CD.user,CD.passwd)
         # 首页-抢投标按钮-进入投标页面
-        IndexPage(prepare_nev).click_firstBid()
+        # time.sleep(3)
+        # IndexPage(prepare_nev).click_firstBid()
         # 投标输入框,输入
         time.sleep(3)
         BidPage(prepare_nev).bid(72)
@@ -83,10 +84,10 @@ class TestInvest:
     #投资失败，异常数据
     @pytest.mark.noinvest2
     def test_invest_failed_invalid_data(self,prepare_nev):
-        time.sleep(5)
-        LoginPage(prepare_nev).login(CD.user, CD.passwd)
-        # 首页-抢投标按钮-进入投标页面
-        IndexPage(prepare_nev).click_firstBid()
+        # time.sleep(5)
+        # LoginPage(prepare_nev).login(CD.user, CD.passwd)
+        # # 首页-抢投标按钮-进入投标页面
+        # IndexPage(prepare_nev).click_firstBid()
         # 投标输入框,输入
         time.sleep(3)
         input_clear=BidPage(prepare_nev).invest(00000)
@@ -97,10 +98,10 @@ class TestInvest:
 
 #投资成功用例
     def test_invest_success(self,prepare_nev):
-        LoginPage(prepare_nev).login(CD.user, CD.passwd)#self.driver对象调用setupClass内里的类方法传参
+        # LoginPage(prepare_nev).login(CD.user, CD.passwd)#self.driver对象调用setupClass内里的类方法传参
         #步骤
-        # 1、首页 - 选标投资。默认选第一个标。
-        IndexPage(prepare_nev).click_firstBid()
+        # # 1、首页 - 选标投资。默认选第一个标。
+        # IndexPage(prepare_nev).click_firstBid()
         # 2.0标页面 - 金额输入框中，获取用户投标前的余额
         bp = BidPage(prepare_nev)
         userMoney_beforeInvest = bp.get_userLeftMoney()

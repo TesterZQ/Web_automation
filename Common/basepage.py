@@ -19,7 +19,6 @@ class BasePage:
         try:
             #获取开始等待时间（自己操作）
             start_time= datetime.datetime.now()
-            time.sleep(5)
             WebDriverWait(self.driver,timeout=30,poll_frequency=0.5).until(EC.visibility_of_all_elements_located(locator))
             #获取结束等待的时间
             #获取等待的总时长-以秒为单位
@@ -28,7 +27,7 @@ class BasePage:
             logging.info("元素可见。等待元素可见总时长：开始等待的时间，等待结束的时间")
         except:
             #捕获异常，写进日志
-            logging.exception("等待元素可见超市")#把报错信息写写进日志
+            logging.exception("等待元素可见超时")#把报错信息写写进日志
             #截图-直接同过图片名称就知道截图是什么图片
             self.save_webimg(model_name)
             raise
